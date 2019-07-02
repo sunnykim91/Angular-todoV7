@@ -4,13 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { Todo } from '../../types/todo.interface';
 import { NavItem } from '../../types/nav-item.type';
 import { environment } from 'src/environments/environment';
+import { TodoService } from 'src/app/todo.service';
 
 @Component({
   selector: 'app-todos-container',
   template: `
     <div class="container">
       <h1 class="title">Todos</h1>
-      <div class="ver">6.0</div>
+      <div class="ver">7.0</div>
 
       <ng-container *ngIf="todos; else loading">
         <app-todo-form (add)="addTodo($event)"></app-todo-form>
@@ -68,24 +69,30 @@ export class TodosContainerComponent implements OnInit {
   todos: Todo[];
   navItems: NavItem[] = ['All', 'Active', 'Completed'];
   navState: NavItem = 'All';
+  content: string;
 
   // API Server URL
   appUrl: string = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private todoService: TodoService) {}
 
   ngOnInit() {
     this.getTodos();
   }
 
   getTodos() {
-    this.http.get<Todo[]>(this.appUrl)
+    this.todoService.getAll()
       .subscribe(todos => this.todos = todos);
   }
 
   addTodo(content: string) {
-    this.http.post<Todo[]>(this.appUrl, { id: this.gererateId(), content, completed: false })
-      .subscribe(todos => this.todos = todos);
+    this.content = this.content && this.content.trim();
+    this.content = '';
+
+    if (!content) { return; }
+    const payload = { id: this.gererateId(), content, completed: false };
+    this.todoService.create(payload)
+      .subscribe(todos => this.todos = todos );
   }
 
   gererateId() {
@@ -95,22 +102,22 @@ export class TodosContainerComponent implements OnInit {
   toggleTodo(id: number) {
     const completed = !this.todos.find(todo => todo.id === id).completed;
 
-    this.http.patch<Todo[]>(`${this.appUrl}/${id}`, { completed })
+    this.todoService.toggle(id, completed)
       .subscribe(todos => this.todos = todos);
   }
 
   removeTodo(id: number) {
-    this.http.delete<Todo[]>(`${this.appUrl}/${id}`)
+    this.todoService.remove(id)
       .subscribe(todos => this.todos = todos);
   }
 
   toggleAll(completed: boolean) {
-    this.http.patch<Todo[]>(this.appUrl, { completed })
+    this.todoService.toggleAlltodos(completed)
       .subscribe(todos => this.todos = todos);
   }
 
   removeCompleted() {
-    this.http.delete<Todo[]>(`${this.appUrl}/completed`)
+    this.todoService.removeCompletedtodos()
       .subscribe(todos => this.todos = todos);
   }
 
