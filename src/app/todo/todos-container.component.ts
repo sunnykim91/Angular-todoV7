@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Todo } from '../../types/todo.interface';
-import { NavItem } from '../../types/nav-item.type';
+import { Todo } from '../types/todo.interface';
+import { NavItem } from '../types/nav-item.type';
 import { environment } from 'src/environments/environment';
-import { TodoService } from 'src/app/todo.service';
+import { TodoService } from 'src/app/core/todo.service';
 
 @Component({
   selector: 'app-todos-container',
   template: `
     <div class="container">
       <h1 class="title">Todos</h1>
-      <div class="ver">7.0</div>
+      <div class="ver">8.0</div>
 
       <ng-container *ngIf="todos; else loading">
         <app-todo-form (add)="addTodo($event)"></app-todo-form>

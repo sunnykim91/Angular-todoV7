@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Todo } from './types/todo.interface';
-import { environment } from '../environments/environment'
+import { Todo } from '../types/todo.interface';
+import { environment } from '../../environments/environment'
+import { CoreModule } from './core.module';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class TodoService {
   appUrl = environment.apiUrl;
 
